@@ -96,26 +96,21 @@ http://<YOUR_VPS_IP>:5173/
 ⚠️ Important: set API Base URL to http://<YOUR_VPS_IP>:8787.
 
 📌 Current Status
-✅ Contract deployed & minting works
+- ✅ Contract deployed & minting works
 
-✅ API stub verification + hashing
+- ✅ API stub verification + hashing
 
-✅ Web UI integration with API
+- ✅ Web UI integration with API
 
 ❌ Soundness SDK integration (pending official release)
 
 🚀 Next Steps
-Replace stub verification with real Soundness SDK.
-
-Add badge metadata / tokenURI.
-
-Optional: convert to Soulbound Token (SBT).
-
-Deploy on a public testnet with demo-ready UI.
+- Replace stub verification with real Soundness SDK.
+- Add badge metadata / tokenURI.
+- Optional: convert to Soulbound Token (SBT).
+- Deploy on a public testnet with demo-ready UI.
 
 👤 Developer
-Name: Axell
-
-GitHub: @xxcode2
-
-Discord: xxcode#3630
+- Name: Axell
+- GitHub: @xxcode2
+- Discord: xxcode#3630
