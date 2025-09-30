@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Soundness Badge Demo</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>zk‑Verified Reputation Badge</h1>
+      <p>Submit your Soundness attestation to mint a badge.</p>
+      <label>API Base URL <input id="api" value="http://localhost:8787"></label>
+      <br/>
+      <label>Your wallet (recipient) <input id="recipient" placeholder="0x..."></label>
+      <br/>
+      <label>Badge type <input id="type" type="number" value="0"></label>
+      <br/>
+      <label>Nonce <input id="nonce" placeholder="random string"></label>
+      <br/>
+      <button id="mint">Mint with Dummy Attestation</button>
+      <pre id="out"></pre>
+    </div>
+    <script type="module" src="/main.js"></script>
+  </body>
+</html>
