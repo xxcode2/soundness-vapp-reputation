@@ -92,7 +92,7 @@ npm install
 npm run dev -- --host
 Open in browser:
 http://<YOUR_VPS_IP>:5173/
-
+```
 ⚠️ Important: set API Base URL to http://<YOUR_VPS_IP>:8787.
 
 📌 Current Status
