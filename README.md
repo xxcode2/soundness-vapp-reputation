@@ -102,7 +102,7 @@ http://<YOUR_VPS_IP>:5173/
 
 - ✅ Web UI integration with API
 
-❌ Soundness SDK integration (pending official release)
+- ❌ Soundness SDK integration (pending official release)
 
 🚀 Next Steps
 - Replace stub verification with real Soundness SDK.
