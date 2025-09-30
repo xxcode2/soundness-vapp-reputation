@@ -43,9 +43,6 @@ app.get('/health', async (_req, res) => {
 
 // --- Replace this with REAL Soundness verification once available ---
 function verifySoundnessAttestation(att) {
-  // Expecting a shape like:
-  // { subject: "0xabc...", type: 0, nonce: "random", proof: {...}, signature: "0x..." }
-  // For now, we just check minimal fields.
   if (!att || typeof att !== 'object') return { ok: false, error: 'No attestation' };
   const { subject, type, nonce } = att;
   if (!/^0x[0-9a-fA-F]{40}$/.test(subject || '')) return { ok: false, error: 'Bad subject' };
@@ -55,7 +52,6 @@ function verifySoundnessAttestation(att) {
 }
 
 function canonicalize(att) {
-  // Deterministic minimal representation for hashing
   const picked = { subject: att.subject, type: att.type, nonce: att.nonce };
   return JSON.stringify(picked);
 }
@@ -63,6 +59,7 @@ function canonicalize(att) {
 app.post('/mint', async (req, res) => {
   try {
     if (!badge) return res.status(500).json({ ok: false, error: 'Contract not configured' });
+
     const { attestation, recipient } = req.body || {};
     const v = verifySoundnessAttestation(attestation);
     if (!v.ok) return res.status(400).json({ ok: false, error: v.error });
@@ -75,16 +72,31 @@ app.post('/mint', async (req, res) => {
     const attHash = '0x' + crypto.createHash('sha256').update(canonical).digest('hex');
 
     const typeCode = Number(attestation.type || 0);
-    const tx = await badge.mintWithAttestation(recipient, attHash, typeCode);
-    const receipt = await tx.wait();
 
-    res.json({ ok: true, txHash: receipt.transactionHash, attHash });
+    console.log("➡️ Minting badge...");
+    console.log("   Recipient:", recipient);
+    console.log("   Attestation hash:", attHash);
+    console.log("   Type:", typeCode);
+
+    const tx = await badge.mintWithAttestation(recipient, attHash, typeCode);
+console.log("   Tx sent:", tx.hash);
+
+const receipt = await tx.wait();
+console.log("   Tx mined:", receipt.hash || receipt.transactionHash);
+
+res.json({
+  ok: true,
+  txHash: tx.hash, // fallback langsung dari tx
+  attHash
+});
+
   } catch (e) {
-    console.error(e);
+    console.error("❌ Mint error:", e);
     res.status(500).json({ ok: false, error: String(e) });
   }
 });
 
-app.listen(Number(PORT), () => {
-  console.log(`API listening on http://localhost:${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`API listening on http://0.0.0.0:${PORT}`);
 });
+

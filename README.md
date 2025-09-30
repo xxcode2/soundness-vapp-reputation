@@ -1,64 +1,121 @@
-# zk-Verified Reputation Badge (Starter)
+# zk-Verified Reputation Badge (PoC)
 
-A minimal end-to-end starter for a **badge NFT** that is minted only when a user presents a **verifiable attestation** from the **Soundness Layer**.
+A proof-of-concept vApp for the **Soundness Layer**.  
+This project demonstrates how users can mint **ERC-721 badges** that are gated by **Soundness attestations**.
 
-> This is a scaffold intended to be **chain-agnostic** on the verification side and **EVM-compatible** for the badge contract. The API currently uses a **stubbed verifier**. Replace the stub with actual Soundness attestation verification once docs/SDK are available.
-
-## What you get
-- **contracts/** — ERC‑721 Badge contract with a safe `mintWithAttestation` gate
-- **api/** — Node/Express server that receives an attestation, verifies it (stub), and calls the contract
-- **web/** — Tiny Vite app to submit an attestation and mint
-- **MIT License**
-
-## Quick start
-### 1) Contracts
-```bash
-cd contracts
-npm i
-# configure your RPC + PRIVATE_KEY in .env (see comments in hardhat.config.js)
-npx hardhat compile
-npx hardhat run scripts/deploy.js --network <yourNetwork>
-```
-Record the deployed **Badge** address and paste it into `api/.env` and `web/main.js`.
-
-### 2) API
-```bash
-cd ../api
-npm i
-cp .env.example .env
-# set RPC_URL, PRIVATE_KEY (the minter/operator), BADGE_ADDRESS, and CHAIN_ID
-npm run dev
-```
-The API exposes:
-- `POST /mint` — `{ attestation, recipient }` → verifies + mints
-- `GET /health` — sanity check
-
-### 3) Web
-```bash
-cd ../web
-npm i
-npm run dev
-```
-Open the local URL and try minting with a **dummy attestation** (until real Soundness verification is wired).
-
-## Replacing the verifier (important)
-1. Open **api/index.js** and replace `verifySoundnessAttestation(att)` with the official verification (sig/merkle/SNARK) as per Soundness docs.
-2. Ensure the verifier yields:
-   - `subject` (wallet address that proved),
-   - `type` (which badge logic applies),
-   - `nonce` (to prevent replay),
-   - `score` or `count` (optional gating).
-3. Pass a **hash** of the attestation into the contract call to bind on-chain state to the off-chain proof (included already).
-
-## Security notes
-- Contract implements **replay protection** via `usedAttestation[hash]`.
-- API re-checks subject matches `recipient` before minting.
-- Consider rate limiting and attestation expiry once integrated.
+Currently, attestation verification is a **stub (dummy)**, but the full flow works:
+- Solidity contract for badge minting.
+- Node.js API for attestation verification + contract calls.
+- Vite web UI for interacting with the API.
 
 ---
 
-### (Optional) Alternative targets
-- Swap EVM contracts for **Sui Move** or **Walrus** program and keep the same API shape.
-- Keep the web & API identical; just change the minting backend.
+## 📂 Project Structure
+soundness-vapp-reputation/
+├── contracts/ # Hardhat project, Solidity contract
+│ ├── contracts/Badge.sol
+│ ├── scripts/deploy.js
+│ └── hardhat.config.js
+├── api/ # Node.js + Express backend
+│ ├── index.js
+│ ├── package.json
+│ └── .env.example
+└── web/ # Frontend Vite app
+├── index.html
+├── main.js
+└── package.json
 
-Good luck & have fun! 🐬
+yaml
+Copy code
+
+---
+
+## ⚖️ Contracts
+### Deploy
+```bash
+cd contracts
+cp .env.example .env   # fill in PRIVATE_KEY, RPC_URL, CHAIN_ID
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network custom
+Example output:
+
+css
+Copy code
+SoundnessBadge deployed to: 0x364b479524767725c71c4C640778476a0a1321BB
+⚙️ API
+Run server
+bash
+Copy code
+cd api
+cp .env.example .env   # fill in PRIVATE_KEY, RPC_URL, BADGE_ADDRESS, CHAIN_ID
+npm install
+npm run dev
+Server runs at http://localhost:8787.
+
+Endpoints
+Health check
+
+bash
+Copy code
+curl http://localhost:8787/health
+→ {"ok":true,"network":1001}
+
+Mint badge
+
+bash
+Copy code
+curl -X POST http://localhost:8787/mint \
+  -H "Content-Type: application/json" \
+  -d '{
+    "recipient": "0xYourWallet",
+    "attestation": {
+      "subject": "0xYourWallet",
+      "type": 0,
+      "nonce": "demo-12345"
+    }
+  }'
+Response:
+
+json
+Copy code
+{
+  "ok": true,
+  "txHash": "0x...",
+  "attHash": "0x..."
+}
+🌐 Web UI
+Run locally
+bash
+Copy code
+cd web
+npm install
+npm run dev -- --host
+Open in browser:
+http://<YOUR_VPS_IP>:5173/
+
+⚠️ Important: set API Base URL to http://<YOUR_VPS_IP>:8787.
+
+📌 Current Status
+✅ Contract deployed & minting works
+
+✅ API stub verification + hashing
+
+✅ Web UI integration with API
+
+❌ Soundness SDK integration (pending official release)
+
+🚀 Next Steps
+Replace stub verification with real Soundness SDK.
+
+Add badge metadata / tokenURI.
+
+Optional: convert to Soulbound Token (SBT).
+
+Deploy on a public testnet with demo-ready UI.
+
+👤 Developer
+Name: Axell
+
+GitHub: @xxcode2
+
+Discord: xxcode#3630
